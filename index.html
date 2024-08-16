@@ -21,6 +21,11 @@
         }
 
         .card {
+            display: flex;
+            flex-direction: column;
+
+            gap: 4px;
+
             box-shadow: var(--shadow);
             padding: var(--spacing);
             border-radius: var(--spacing);
@@ -41,7 +46,8 @@
     <template id="peekingCard">
         <div class="card">
             <a class="title"></a>
-            <span class="description"></span>
+            <div><b>Publisher:</b> <span class="publisher"></span></div>
+            <div><span class="publishTime"></span></div>
         </div>
     </template>
 
@@ -65,7 +71,7 @@
     </div>
     <div>
         <button id="refresh">Refresh</button>
-
+        <div id="peekingResult"></div>
     </div>
 </body>
 
