@@ -68,7 +68,7 @@ const selectedChannelIds = () => {
 const updatePeekingCard = async () => {
     await publishersPromise
     const articles = await articlesPromise
-    const peek = pickPeekingCard(selectedPublisherIds(), selectedChannelIds(), articles)
+    const [peek, trace] = pickPeekingCard(selectedPublisherIds(), selectedChannelIds(), articles)
 
     const template = document.getElementById('peekingCard') as HTMLTemplateElement
     const el = template.content.cloneNode(true) as HTMLDivElement
@@ -82,6 +82,12 @@ const updatePeekingCard = async () => {
 
     const publishTime = el.querySelector('.publishTime') as HTMLSpanElement
     publishTime.textContent = peek.publish_time
+
+    const scoreEl = el.querySelector('.score') as HTMLSpanElement
+    scoreEl.textContent = trace.score.toString()
+
+    const traceEl = el.querySelector('.trace') as HTMLUListElement
+    traceEl.innerHTML = trace.explain().split('\n').map(t => `<li>${t}</li>`).join('')
 
     const peekingResult = document.getElementById('peekingResult') as HTMLDivElement
     peekingResult.replaceChildren(el)
