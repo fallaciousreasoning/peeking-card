@@ -1,5 +1,5 @@
 import { Article, Publisher } from "./model"
-import { pickPeekingCard } from "./picker"
+import { pickPeekingCard, Trace } from "./picker"
 
 const HARDCODE_LOCALE = "en_US"
 
@@ -65,32 +65,46 @@ const selectedChannelIds = () => {
     return Array.from(document.querySelectorAll('#channels input:checked')).map(r => r.getAttribute('data-id')!)
 }
 
-const updatePeekingCard = async () => {
-    await publishersPromise
-    const articles = await articlesPromise
-    const [peek, trace] = pickPeekingCard(selectedPublisherIds(), selectedChannelIds(), articles)
-
+const createArticleCard = ([article, trace]: [Article, Trace]) => {
     const template = document.getElementById('peekingCard') as HTMLTemplateElement
     const el = template.content.cloneNode(true) as HTMLDivElement
 
     const title = el.querySelector('.title') as HTMLAnchorElement
-    title.textContent = peek.title
-    title.setAttribute('href', peek.url)
+    title.textContent = article.title
+    title.setAttribute('href', article.url)
 
     const publisher = el.querySelector('.publisher') as HTMLSpanElement
-    publisher.textContent = peek.publisher_name
+    publisher.textContent = article.publisher_name
 
     const publishTime = el.querySelector('.publishTime') as HTMLSpanElement
-    publishTime.textContent = peek.publish_time
+    publishTime.textContent = article.publish_time
 
     const scoreEl = el.querySelector('.score') as HTMLSpanElement
     scoreEl.textContent = trace.score.toString()
 
     const traceEl = el.querySelector('.trace') as HTMLUListElement
     traceEl.innerHTML = trace.explain().split('\n').map(t => `<li>${t}</li>`).join('')
+    return el
+}
 
+const updatePeekingCard = async () => {
+    await publishersPromise
+    const articles = await articlesPromise
+    const {
+        result,
+        finalCandidates
+    } = pickPeekingCard(selectedPublisherIds(), selectedChannelIds(), articles)
+
+    const peekingCard = createArticleCard(result)
     const peekingResult = document.getElementById('peekingResult') as HTMLDivElement
-    peekingResult.replaceChildren(el)
+    peekingResult.replaceChildren(peekingCard)
+
+    const finalCandidatesEl = document.getElementById('finalCandidates') as HTMLDivElement
+    finalCandidatesEl.replaceChildren(...finalCandidates.map(c => {
+        const el = createArticleCard(c)
+        if (c[0] === result[0]) el.querySelector('.card')!.classList.add('selected')
+        return el
+    }))
 }
 
 updatePeekingCard()

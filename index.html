@@ -38,6 +38,16 @@
         [hidden] {
             display: none;
         }
+
+        #finalCandidates {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+            & .selected {
+                background: lightyellow;
+            }
+        }
     </style>
 </head>
 
@@ -78,6 +88,10 @@
     <div>
         <button id="refresh">Refresh</button>
         <div id="peekingResult"></div>
+        <div>
+            <h2>Final Candidates</h2>
+            <div id="finalCandidates"></div>
+        </div>
     </div>
 </body>
 

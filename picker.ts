@@ -59,9 +59,14 @@ const defaultOptions: Options = {
     maxCandidates: 10
 }
 
+export interface PeekingCardResult {
+    finalCandidates: [Article, Trace][],
+    result: [Article, Trace]
+}
+
 const random = <T>(items: T[]) => items[Math.floor(Math.random() * items.length)]
 
-export const pickPeekingCard = (publishers: string[], channels: string[], articles: Article[], options = defaultOptions): [Article, Trace] => {
+export const pickPeekingCard = (publishers: string[], channels: string[], articles: Article[], options = defaultOptions): PeekingCardResult => {
     const publishersSet = new Set(publishers)
     const channelsSet = new Set(channels)
 
@@ -120,9 +125,10 @@ export const pickPeekingCard = (publishers: string[], channels: string[], articl
         for (const channel of article.channels) seenChannels.add(channel)
     }
 
-    // Select a random candidate
-    if (finalCandidates.length) return random(finalCandidates)
-
-
-    return [articles[0], new Trace('no scored articles')]
+    // Select a random candidate, fall back to the first article
+    const pick = random(finalCandidates) ?? [articles[0], new Trace('no scored articles')]
+    return {
+        finalCandidates,
+        result: pick
+    }
 }
