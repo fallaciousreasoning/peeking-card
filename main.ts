@@ -76,6 +76,9 @@ const createArticleCard = ([article, trace]: [Article, Trace]) => {
     const publisher = el.querySelector('.publisher') as HTMLSpanElement
     publisher.textContent = article.publisher_name
 
+    const channels = el.querySelector('.channels') as HTMLSpanElement
+    channels.textContent = article.channels.join(', ')
+
     const publishTime = el.querySelector('.publishTime') as HTMLSpanElement
     publishTime.textContent = article.publish_time
 
