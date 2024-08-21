@@ -114,15 +114,24 @@ export const pickPeekingCard = (publishers: string[], channels: string[], articl
     })
 
     const finalCandidates: [Article, Trace][] = []
-    const seenChannels = new Set<string>()
+    const seenChannels = new Map<string, number>()
+    const followingCount = publishersSet.size + channelsSet.size
+
+    // Make sure we can pick enough options to have at least |maxCandidates|
+    // options in out finalCandidates.
+    const channelLimit = followingCount < options.maxCandidates
+        ? (options.maxCandidates / followingCount)
+        : 1
 
     // Pick a number of candidates
     for (const [article, trace] of sorted) {
         if (finalCandidates.length >= defaultOptions.maxCandidates) break
-        if (article.channels.some(c => seenChannels.has(c))) continue
+        if (article.channels.some(c => (seenChannels.get(c) ?? 0) >= channelLimit)) continue
 
         finalCandidates.push([article, trace])
-        for (const channel of article.channels) seenChannels.add(channel)
+        for (const channel of article.channels) {
+            seenChannels.set(channel, (seenChannels.get(channel) ?? 0) + 1)
+        }
     }
 
     // Select a random candidate, fall back to the first article
