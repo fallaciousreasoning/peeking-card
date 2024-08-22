@@ -1,5 +1,6 @@
 import { Article, Publisher } from "./model"
 import { pickPeekingCard, Trace } from "./picker"
+import './importer'
 
 const HARDCODE_LOCALE = "en_US"
 
